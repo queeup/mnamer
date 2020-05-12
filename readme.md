@@ -8,7 +8,8 @@ mnamer (**m**edia re**namer**) is an intelligent and highly configurable media o
 
 Currently it has integration support with [TVDb](https://thetvdb.com) and [TvMaze](https://www.tvmaze.com) for television episodes and [TMDb](https://www.themoviedb.org/) and [OMDb](https://www.omdbapi.com) for movies.
 
-![](https://github.com/jkwill87/mnamer/raw/master/assets/screenshot.png)
+![cli screenshot](https://github.com/jkwill87/mnamer/raw/v3/assets/cli.png)
+![gui screenshot](https://github.com/jkwill87/mnamer/raw/v3/assets/gui.png)
 
 ## Installation
 
