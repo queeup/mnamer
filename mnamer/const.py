@@ -9,7 +9,14 @@ from appdirs import user_cache_dir
 
 from mnamer.__version__ import VERSION
 
-__all__ = ["CACHE_PATH", "CURRENT_YEAR", "IS_DEBUG", "SYSTEM", "VERSION"]
+__all__ = [
+    "CACHE_PATH",
+    "CURRENT_YEAR",
+    "IS_DEBUG",
+    "SYSTEM",
+    "USAGE",
+    "VERSION",
+]
 
 
 CACHE_PATH = Path(
@@ -28,3 +35,5 @@ SYSTEM = {
     "mnamer version": VERSION,
     "requests cache": f"{CACHE_PATH}.sql",
 }
+
+USAGE = "mnamer [preferences] [directives] target [targets ...]"

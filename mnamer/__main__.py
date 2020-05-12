@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-from mnamer.argument import ArgParser
 from mnamer.const import IS_DEBUG
 from mnamer.frontends import *
 from mnamer.settings import Settings
-from mnamer.types import MessageType
 
 
 def main(gui=False):  # pragma: no cover
@@ -15,11 +13,11 @@ def main(gui=False):  # pragma: no cover
     try:
         settings = Settings(load_configuration=True, load_arguments=True)
     except MnamerException as e:
-        tty.msg(str(e), MessageType.ERROR)
-        raise SystemExit(1)
+        tty.error(e)
+        raise SystemExit(2)
     frontend = Gui if gui or settings.gui else Cli
     if frontend is Cli and not settings.has_valid_arguments:
-        tty.msg(ArgParser.usage, MessageType.ERROR)
+        tty.error(ArgParser.usage)
         raise SystemExit(1)
     if IS_DEBUG:
         # allow exceptions to raised when debugging

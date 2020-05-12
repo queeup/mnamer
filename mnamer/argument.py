@@ -2,6 +2,7 @@ import argparse
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
+from mnamer.const import USAGE
 from mnamer.exceptions import MnamerException
 from mnamer.types import SettingsType
 
@@ -56,7 +57,7 @@ class ArgParser(argparse.ArgumentParser):
         super().__init__(
             prog="mnamer",
             epilog="Visit https://github.com/jkwill87/mnamer for more information.",
-            usage="mnamer [preferences] [directives] target [targets ...]",
+            usage=USAGE,
             argument_default=argparse.SUPPRESS,
         )
         self._positional_group = self.add_argument_group()

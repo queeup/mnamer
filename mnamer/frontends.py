@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from mnamer import gui, tty
-from mnamer.const import SYSTEM, VERSION
+from mnamer.const import SYSTEM, USAGE, VERSION
 from mnamer.exceptions import (
     MnamerAbortException,
     MnamerException,
@@ -60,8 +60,13 @@ class Frontend(ABC):
 
 
 class Cli(Frontend):
-    def launch(self):
+    def __init__(self, settings: Settings):
+        if not settings._arg_data:
+            tty.error(USAGE)
+            raise SystemExit(2)
+        super().__init__(settings)
 
+    def launch(self):
         # exit early if no media files are found
         total_count = len(self.targets)
         if total_count == 0:
