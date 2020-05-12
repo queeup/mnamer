@@ -211,7 +211,15 @@ class Settings:
     )
 
     # directive attributes -----------------------------------------------------
-
+    gui: bool = dataclasses.field(
+        default=False,
+        metadata=ArgSpec(
+            action="store_true",
+            flags=["-G", "--gui"],
+            group=SettingsType.DIRECTIVE,
+            help="-G, --gui: launch mnamer using its graphical user interface",
+        )(),
+    )
     version: bool = dataclasses.field(
         default=False,
         metadata=ArgSpec(
@@ -337,6 +345,15 @@ class Settings:
             self._load_configuration(configuration_path)
             self._bulk_apply(self._config_data)
         self._bulk_apply(self._arg_data)
+
+    @property
+    def has_valid_arguments(self):
+        if self.load_arguments is False:
+            return True
+        elif self.gui:
+            return True
+        else:
+            return bool(self._arg_data)
 
     @classmethod
     def _attribute_metadata(cls) -> Dict[str, ArgSpec]:

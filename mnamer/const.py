@@ -9,12 +9,7 @@ from appdirs import user_cache_dir
 
 from mnamer.__version__ import VERSION
 
-__all__ = [
-    "CACHE_PATH",
-    "CURRENT_YEAR",
-    "IS_DEBUG",
-    "SYSTEM",
-]
+__all__ = ["CACHE_PATH", "CURRENT_YEAR", "IS_DEBUG", "SYSTEM", "VERSION"]
 
 
 CACHE_PATH = Path(

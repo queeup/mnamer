@@ -92,8 +92,6 @@ class ArgParser(argparse.ArgumentParser):
         load_arguments, unknowns = self.parse_known_args(args, namespace)
         if unknowns:
             raise MnamerException(f"invalid arguments: {','.join(unknowns)}")
-        if not vars(load_arguments):
-            raise MnamerException(self.usage)
         return load_arguments
 
     def _actions_for_group(self, group: SettingsType):
