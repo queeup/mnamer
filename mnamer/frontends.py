@@ -106,10 +106,9 @@ class Cli(Frontend):
                 if self.settings.batch:
                     match = matches[0] if matches else target.metadata
                 elif not matches:
-                    match = tty.confirm_guess(target.metadata)
+                    match = tty.metadata_guess(target.metadata)
                 else:
-                    tty.msg("results")
-                    match = tty.prompt(matches)
+                    match = tty.metadata_prompt(matches)
             except MnamerSkipException:
                 tty.msg("skipping (user request)", MessageType.ALERT)
                 continue
@@ -117,6 +116,18 @@ class Cli(Frontend):
                 tty.msg("aborting (user request)", MessageType.ERROR)
                 break
             target.metadata.update(match)
+
+            if target.metadata.is_subtitle and not target.metadata.language:
+                if self.settings.batch:
+                    continue
+                try:
+                    target.metadata.language = tty.subtitle_prompt()
+                except MnamerSkipException:
+                    tty.msg("skipping (user request)", MessageType.ALERT)
+                    continue
+                except MnamerAbortException:
+                    tty.msg("aborting (user request)", MessageType.ERROR)
+                    break
 
             # sanity check move
             if target.destination == target.source:
@@ -134,11 +145,13 @@ class Cli(Frontend):
             self._rename_and_move_file(target)
 
     def _announce_file(self, target: Target):
-        media_label = target.metadata.media.value.title()
+        media_type = target.metadata.media.value.title()
+        is_subtitle = target.metadata.is_subtitle
+        description = f"{media_type} Subtitle" if is_subtitle else media_type
         filename_label = target.source.name
         filesize_label = get_filesize(target.source)
         tty.msg(
-            f'\nProcessing {media_label} "{filename_label}" ({filesize_label})',
+            f'\nProcessing {description} "{filename_label}" ({filesize_label})',
             MessageType.HEADING,
         )
         tty.msg(target.source, debug=True)

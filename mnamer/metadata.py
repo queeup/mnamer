@@ -3,11 +3,12 @@ import re
 from datetime import date
 from pathlib import Path
 from string import Formatter
-from typing import Union
+from typing import Any, Union
 
 from guessit import guessit
 
-from mnamer.types import MediaType
+# from babelfish import Language
+from mnamer.types import MediaType, Language
 from mnamer.utils import (
     fn_pipe,
     normalize_extension,
@@ -38,6 +39,7 @@ class Metadata:
 
     extension: str = None
     group: str = None
+    language: Language = None
     quality: str = None
     synopsis: str = None
     file_path: dataclasses.InitVar[Path] = None
@@ -67,12 +69,14 @@ class Metadata:
             )
             or None
         )
+        self.language = self._path_data.get("subtitle_language")
         self.group = self._path_data.get("release_group")
         self.extension = file_path.suffix or None
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Any):
         converter = {
             "extension": normalize_extension,
+            "language": Language,
             "group": str.upper,
             "media": MediaType,
             "quality": str.lower,
@@ -82,11 +86,15 @@ class Metadata:
             value = converter(value)
         super().__setattr__(key, value)
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec: str):
         raise NotImplementedError
 
     def __str__(self):
         return self.__format__(None)
+
+    @property
+    def is_subtitle(self):
+        return self.extension and self.extension.endswith(".srt")
 
     @property
     def as_dict(self):
@@ -98,7 +106,13 @@ class Metadata:
         if isinstance(raw_data.get("season"), list):
             raw_data = dict(guessit(str(file_path.parts[-1]), options))
         for k, v in raw_data.items():
-            if isinstance(v, (int, str, date)):
+            if getattr(v, "alpha2", False):
+                # e.g. babelfish Language class ISO 639-1 code
+                try:
+                    self._path_data[k] = Language(v.alpha2)
+                except ValueError:
+                    continue
+            elif isinstance(v, (int, str, date)):
                 self._path_data[k] = v
             elif isinstance(v, list) and all(
                 [isinstance(_, (int, str)) for _ in v]
@@ -141,14 +155,14 @@ class MetadataMovie(Metadata):
         self.name = self._path_data.get("title")
         self.year = self._path_data.get("year")
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec: str):
         default = "{name} ({year})"
         re_pattern = r"({(\w+)(?:\[[\w:]+\])?(?:\:\d{1,2})?})"
         s = re.sub(re_pattern, self._format_repl, format_spec or default)
         s = str_fix_padding(s)
         return s
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Any):
         converter = {
             "name": fn_pipe(str_replace_slashes, str_title_case),
             "year": year_parse,
@@ -190,14 +204,14 @@ class MetadataEpisode(Metadata):
         # if year:
         #     self.series = f"{self.series} {year}"
 
-    def __format__(self, format_spec):
+    def __format__(self, format_spec: str):
         default = "{series} - {season:02}x{episode:02} - {title}"
         re_pattern = r"({(\w+)(?:\[[\w:]+\])?(?:\:\d{1,2})?})"
         s = re.sub(re_pattern, self._format_repl, format_spec or default)
         s = str_fix_padding(s)
         return s
 
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: Any):
         converter = {
             "date": parse_date,
             "episode": int,
@@ -217,12 +231,8 @@ def parse_metadata(file_path: Path, media_hint: MediaType = None) -> Metadata:
     if omitted.
     """
     metadata = Metadata(file_path=file_path, media=media_hint)
-    if metadata.media is MediaType.EPISODE:
-        metadata = MetadataEpisode(
-            **dataclasses.asdict(metadata), file_path=file_path
-        )
-    elif metadata.media is MediaType.MOVIE:
-        metadata = MetadataMovie(
-            **dataclasses.asdict(metadata), file_path=file_path
-        )
-    return metadata
+    derived_cls = {
+        MediaType.EPISODE: MetadataEpisode,
+        MediaType.MOVIE: MetadataMovie,
+    }[metadata.media]
+    return derived_cls(**dataclasses.asdict(metadata), file_path=file_path)

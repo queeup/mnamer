@@ -98,7 +98,15 @@ class SettingStore:
         )(),
     )
     mask: List[str] = dataclasses.field(
-        default_factory=lambda: ["avi", "m4v", "mp4", "mkv", "ts", "wmv"],
+        default_factory=lambda: [
+            "avi",
+            "m4v",
+            "mp4",
+            "mkv",
+            "srt",
+            "ts",
+            "wmv",
+        ],
         metadata=SettingSpec(
             flags=["--mask"],
             group=SettingType.PARAMETER,
@@ -170,7 +178,7 @@ class SettingStore:
         )(),
     )
     movie_format: str = dataclasses.field(
-        default="{name} ({year}){extension}",
+        default="{name} ({year}).{language}.{extension}",
         metadata=SettingSpec(
             dest="movie_format",
             flags=["--movie_format", "--movie-format", "--movieformat"],
@@ -202,7 +210,7 @@ class SettingStore:
         )(),
     )
     episode_format: str = dataclasses.field(
-        default="{series} - S{season:02}E{episode:02} - {title}{extension}",
+        default="{series} - S{season:02}E{episode:02} - {title}.{language}.{extension}",
         metadata=SettingSpec(
             dest="episode_format",
             flags=["--episode_format", "--episode-format", "--episodeformat"],
