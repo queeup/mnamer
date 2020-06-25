@@ -32,26 +32,26 @@ class SettingType(Enum):
     CONFIGURATION = "configuration"
 
 
-class Language(Enum):
-    # based on http://stephenfollows.com/languages-most-commonly-used-in-movies
-    ENGLISH = "en"
-    FRENCH = "fr"
-    SPANISH = "es"
-    GERMAN = "de"
-    HINDI = "hi"
-    CHINESE = "zh"
-    JAPANESE = "ja"
-    ITALIAN = "it"
-    RUSSIAN = "ru"
-    ARABIC = "ar"
-    KOREAN = "ko"
-    HEBREW = "he"
-    PORTUGUESE = "pt"
-    SWEDISH = "sv"
-    LATIN = "la"
-    UKRAINIAN = "uk"
-    DANISH = "da"
-    PERSIAN = "fa"
+# class Language(Enum):
+#     # based on http://stephenfollows.com/languages-most-commonly-used-in-movies
+#     ENGLISH = "en"
+#     FRENCH = "fr"
+#     SPANISH = "es"
+#     GERMAN = "de"
+#     HINDI = "hi"
+#     CHINESE = "zh"
+#     JAPANESE = "ja"
+#     ITALIAN = "it"
+#     RUSSIAN = "ru"
+#     ARABIC = "ar"
+#     KOREAN = "ko"
+#     HEBREW = "he"
+#     PORTUGUESE = "pt"
+#     SWEDISH = "sv"
+#     LATIN = "la"
+#     UKRAINIAN = "uk"
+#     DANISH = "da"
+#     PERSIAN = "fa"
 
-    def __str__(self):
-        return str(self.value)
+#     def __str__(self):
+#         return str(self.value)

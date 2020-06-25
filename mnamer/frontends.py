@@ -33,7 +33,7 @@ class Frontend(ABC):
             raise SystemExit(0)
 
         if self.settings.config_dump:
-            print(self.settings.as_json)
+            print(self.settings.as_json())
             raise SystemExit(0)
 
         if self.settings.clear_cache:
@@ -53,7 +53,7 @@ class Frontend(ABC):
         tty.msg("\nsystem", debug=True)
         tty.msg(SYSTEM, debug=True)
         tty.msg("\nsettings", debug=True)
-        tty.msg(self.settings.as_dict, debug=True)
+        tty.msg(self.settings.as_dict(), debug=True)
         tty.msg("\ntargets", debug=True)
         tty.msg(self.targets or [None], debug=True)
 
@@ -163,7 +163,7 @@ class Cli(Frontend):
             debug=True,
         )
         tty.msg("\nsearch parameters", debug=True)
-        tty.msg(target.metadata.as_dict, debug=True)
+        tty.msg(target.metadata.as_dict(), debug=True)
         tty.msg("", debug=True)
 
     def _rename_and_move_file(self, target: Target):

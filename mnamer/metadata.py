@@ -7,11 +7,11 @@ from typing import Any, Union
 
 from guessit import guessit
 
-# from babelfish import Language
-from mnamer.types import MediaType, Language
+from babelfish import Language
+from mnamer.types import MediaType
 from mnamer.utils import (
     fn_pipe,
-    normalize_extension,
+    normalize_container,
     parse_date,
     str_fix_padding,
     str_replace_slashes,
@@ -37,7 +37,7 @@ class _MetaFormatter(Formatter):
 class Metadata:
     """A dataclass which transforms and stores media metadata information."""
 
-    extension: str = None
+    container: str = None
     group: str = None
     language: Language = None
     quality: str = None
@@ -64,19 +64,18 @@ class Metadata:
         self.quality = (
             " ".join(
                 self._path_data[key]
-                for key in self._path_data.keys()
+                for key in self._path_data
                 if key in quality_keys
             )
             or None
         )
         self.language = self._path_data.get("subtitle_language")
         self.group = self._path_data.get("release_group")
-        self.extension = file_path.suffix or None
+        self.container = file_path.suffix or None
 
     def __setattr__(self, key: str, value: Any):
         converter = {
-            "extension": normalize_extension,
-            "language": Language,
+            "container": normalize_container,
             "group": str.upper,
             "media": MediaType,
             "quality": str.lower,
@@ -93,12 +92,20 @@ class Metadata:
         return self.__format__(None)
 
     @property
-    def is_subtitle(self):
-        return self.extension and self.extension.endswith(".srt")
+    def extension(self):
+        if self.is_subtitle and self.language:
+            return f".{self.language.alpha2}{self.container}"
+        else:
+            return self.container
 
     @property
+    def is_subtitle(self):
+        return self.container and self.container.endswith(".srt")
+
     def as_dict(self):
-        return dataclasses.asdict(self)
+        d = dataclasses.asdict(self)
+        d["extension"] = self.extension
+        return d
 
     def _parse_path_data(self, file_path: Path):
         options = {"type": getattr(self.media, "value", None)}
@@ -106,13 +113,7 @@ class Metadata:
         if isinstance(raw_data.get("season"), list):
             raw_data = dict(guessit(str(file_path.parts[-1]), options))
         for k, v in raw_data.items():
-            if getattr(v, "alpha2", False):
-                # e.g. babelfish Language class ISO 639-1 code
-                try:
-                    self._path_data[k] = Language(v.alpha2)
-                except ValueError:
-                    continue
-            elif isinstance(v, (int, str, date)):
+            if isinstance(v, (int, str, date, Language)):
                 self._path_data[k] = v
             elif isinstance(v, list) and all(
                 [isinstance(_, (int, str)) for _ in v]
@@ -121,7 +122,7 @@ class Metadata:
 
     def _format_repl(self, mobj):
         format_string, key = mobj.groups()
-        value = _MetaFormatter().vformat(format_string, None, self.as_dict)
+        value = _MetaFormatter().vformat(format_string, None, self.as_dict())
         if key in {"name", "series", "synopsis", "title"}:
             value = str_title_case(value)
         return value

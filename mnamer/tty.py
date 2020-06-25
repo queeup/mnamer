@@ -15,8 +15,9 @@ from mnamer.exceptions import (
 )
 from mnamer.metadata import Metadata
 from mnamer.setting_store import SettingStore
-from mnamer.types import Language, MessageType
+from mnamer.types import MessageType
 from mnamer.utils import format_dict, format_exception, format_iter
+from babelfish import Language
 
 no_style: bool = False
 verbose: bool = False
@@ -122,7 +123,32 @@ def metadata_guess(
 
 def subtitle_prompt() -> Metadata:
     msg("select language")
-    choices = [ChoiceHelper(lang, lang.name.title()) for lang in Language]
+    choices = [
+        ChoiceHelper(language, language.name)
+        for language in [
+            Language(code)
+            for code in [
+                "eng",
+                "fra",
+                "spa",
+                "deu",
+                "hin",
+                "zho",
+                "jpn",
+                "ita",
+                "rus",
+                "ara",
+                "kor",
+                "heb",
+                "por",
+                "swe",
+                "lat",
+                "ukr",
+                "dan",
+                "fas",
+            ]
+        ]
+    ]
     selector = SelectOne(choices + _abort_helpers(), **_chars())
     choice = selector.prompt()
     if choice in (MnamerAbortException, MnamerSkipException):
