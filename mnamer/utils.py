@@ -332,6 +332,7 @@ def str_sanitize(filename: str) -> str:
     """Removes illegal filename characters and condenses whitespace."""
     base, container = splitext(filename)
     if container == ".srt":
+        base = base.rstrip(".")
         base, container = splitext(base)
         container = container + ".srt"
     base = re.sub(r"\s+", " ", base)

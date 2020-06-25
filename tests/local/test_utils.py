@@ -248,6 +248,15 @@ def test_str_sanitize__remove_illegal_chars():
     assert actual == expected
 
 
+@pytest.mark.parametrize(
+    "filename", ("xx.mkv.srt", "xx..mkv.srt", "xx.mkv..srt")
+)
+def test_srt_sanitize__subtitle(filename):
+    expected = "xx.mkv.srt"
+    actual = str_sanitize(filename)
+    assert actual == expected
+
+
 def test_str_scenify__dot_concat():
     filename = "some  file..name"
     expected = "some.file.name"

@@ -3,6 +3,7 @@
 import traceback
 from typing import Any, Dict, List, Optional
 
+from babelfish import Language
 from teletype import codes
 from teletype.components import ChoiceHelper, SelectOne
 from teletype.io import style_format, style_print
@@ -17,7 +18,6 @@ from mnamer.metadata import Metadata
 from mnamer.setting_store import SettingStore
 from mnamer.types import MessageType
 from mnamer.utils import format_dict, format_exception, format_iter
-from babelfish import Language
 
 no_style: bool = False
 verbose: bool = False

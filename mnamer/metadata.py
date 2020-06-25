@@ -5,9 +5,9 @@ from pathlib import Path
 from string import Formatter
 from typing import Any, Union
 
+from babelfish import Language
 from guessit import guessit
 
-from babelfish import Language
 from mnamer.types import MediaType
 from mnamer.utils import (
     fn_pipe,
