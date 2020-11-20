@@ -42,6 +42,7 @@ class Metadata:
     quality: str = None
     synopsis: str = None
     media: MediaType = None
+    original: str = None
 
     def __setattr__(self, key: str, value: Any):
         converter = {
